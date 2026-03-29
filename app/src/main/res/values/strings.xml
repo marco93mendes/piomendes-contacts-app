@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Contacts App</string>
+    <string name="contacts_title">Contacts</string>
+    <string name="loading_contacts">Loading contacts...</string>
+    <string name="error_icon_description">Error icon</string>
+    <string name="error_title">Failed to load contacts</string>
+    <string name="error_subtitle">Wait a moment and try again</string>
+    <string name="reload_button">Reload</string>
 </resources>
