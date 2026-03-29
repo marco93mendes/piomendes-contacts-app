@@ -1,5 +1,6 @@
 package com.piomendes.contactsapp.ui.contact
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,7 +21,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.piomendes.contactsapp.R
@@ -80,12 +83,14 @@ fun ErrorState(modifier: Modifier = Modifier) {
         Text(
             modifier = Modifier.padding(textPadding),
             text = stringResource(R.string.error_title),
+            textAlign = TextAlign.Center,
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.primary
         )
         Text(
             modifier = Modifier.padding(textPadding),
             text = stringResource(R.string.error_subtitle),
+            textAlign = TextAlign.Center,
             style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.primary
         )
@@ -95,6 +100,37 @@ fun ErrorState(modifier: Modifier = Modifier) {
         ) {
             Text(stringResource(R.string.reload_button))
         }
+    }
+}
+
+@Composable
+fun EmptyList(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier
+            .padding(all = 16.dp)
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Image(
+            painter = painterResource(R.drawable.no_data),
+            contentDescription = stringResource(R.string.empty_icon_description),
+        )
+        Text(
+            text = stringResource(R.string.empty_title),
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(top = 16.dp),
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.primary
+        )
+        Text(
+            text = stringResource(R.string.empty_subtitle),
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(top = 16.dp),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.primary
+        )
+
     }
 }
 
@@ -110,7 +146,7 @@ fun AppBarPreview() {
     }
 }
 
-@Preview(showBackground = true, heightDp = 200)
+@Preview(showBackground = true, heightDp = 120)
 @Composable
 fun LoadingStatePreview() {
     ContactsAppTheme {
@@ -118,10 +154,18 @@ fun LoadingStatePreview() {
     }
 }
 
-@Preview(showBackground = true, heightDp = 300)
+@Preview(showBackground = true, heightDp = 220)
 @Composable
 fun ErrorStatePreview() {
-    ContactsAppTheme() {
+    ContactsAppTheme {
         ErrorState()
+    }
+}
+
+@Preview(showBackground = true, heightDp = 450)
+@Composable
+fun EmptyListPreview() {
+    ContactsAppTheme {
+        EmptyList()
     }
 }
