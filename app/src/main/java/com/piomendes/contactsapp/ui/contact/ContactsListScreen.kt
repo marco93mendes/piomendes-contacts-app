@@ -79,6 +79,16 @@ fun ContactsListScreen(
             isLoadingState.value = false
         }
     }
+    
+    val toggleIsFavorite: (Contact) -> Unit = { favoritedContact ->
+        contactsState.value = contactsState.value.map { currentContact ->
+            if (currentContact.id == favoritedContact.id) {
+                currentContact.copy(isFavorite = !currentContact.isFavorite)
+            } else {
+                currentContact
+            }
+        }
+    }
 
     if (isInitialCompositionState.value) {
         loadContacts()
@@ -101,7 +111,7 @@ fun ContactsListScreen(
             floatingActionButton = {
                 ExtendedFloatingActionButton(onClick = {
                     contactsState.value = contactsState.value.plus(
-                        Contact(99999, "${contactsState.value.size} NEW", "CONTACT")
+                        Contact(id = contactsState.value.size + 1, "${contactsState.value.size} NEW", "CONTACT")
                     )
                 }) {
                     Icon(
@@ -109,7 +119,7 @@ fun ContactsListScreen(
                         contentDescription = stringResource(R.string.add_contact_description)
                     )
                     Spacer(Modifier.size(8.dp))
-                    Text("New Contact")
+                    Text("New contact")
                 }
             }
         ) { paddingValues ->
@@ -119,7 +129,8 @@ fun ContactsListScreen(
             } else {
                 List(
                     modifier = defaultModifier,
-                    contacts = contactsState.value
+                    contacts = contactsState.value,
+                    onFavoritePressed = toggleIsFavorite
                 )
             }
         }
@@ -246,21 +257,26 @@ fun EmptyList(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun List(modifier: Modifier = Modifier, contacts: List<Contact> = emptyList()) {
+fun List(
+    modifier: Modifier = Modifier,
+    contacts: List<Contact> = emptyList(),
+    onFavoritePressed: (Contact) -> Unit = {}
+) {
     LazyColumn(
         modifier = modifier.fillMaxSize()
     ) {
         items(contacts) { contact ->
-            ContactListItem(contact = contact)
+            ContactListItem(contact = contact, onFavoritePressed = onFavoritePressed)
         }
     }
 }
 
 @Composable
-fun ContactListItem(modifier: Modifier = Modifier, contact: Contact) {
-    val isFavoriteState: MutableState<Boolean> = rememberSaveable {
-        mutableStateOf(contact.isFavorite)
-    }
+fun ContactListItem(
+    modifier: Modifier = Modifier,
+    contact: Contact,
+    onFavoritePressed: (Contact) -> Unit
+) {
     ListItem(
         modifier = modifier,
         headlineContent = {
@@ -269,10 +285,10 @@ fun ContactListItem(modifier: Modifier = Modifier, contact: Contact) {
         trailingContent = {
             IconButton(
                 onClick = {
-                    isFavoriteState.value = !isFavoriteState.value
+                    onFavoritePressed(contact)
                 }
             ) {
-                if (isFavoriteState.value) {
+                if (contact.isFavorite) {
                     Icon(
                         imageVector = Icons.Filled.Favorite,
                         contentDescription = stringResource(R.string.favorite_icon_description),
@@ -334,7 +350,7 @@ fun EmptyListPreview() {
 @Composable
 fun ListPreview() {
     ContactsAppTheme() {
-        List(contacts = generateContacts())
+        List(contacts = generateContacts(), onFavoritePressed = {})
     }
 }
 
