@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -27,6 +29,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,9 +48,10 @@ import kotlin.random.Random
 
 @Composable
 fun ContactsListScreen(modifier: Modifier = Modifier) {
-    var isLoading = true
+    var isLoading = false
     var isError = false
-    var contacts = listOf<Contact>() //generateContacts()
+    //var contacts = listOf<Contact>() //STANDARD
+    var contacts = generateContacts() //FOR TESTS
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -165,41 +172,47 @@ fun EmptyList(modifier: Modifier = Modifier) {
 
 @Composable
 fun List(modifier: Modifier = Modifier, contacts: List<Contact> = emptyList()) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(state = rememberScrollState())
+    LazyColumn(
+        modifier = modifier.fillMaxSize()
     ) {
-        contacts.forEach { contact ->
-            var isFavorite = contact.isFavorite
-            ListItem(
-                headlineContent = {
-                    Text(contact.fullName)
-                },
-                trailingContent = {
-                    IconButton(
-                        onClick = {
-                            isFavorite = !isFavorite
-                        }
-                    ) {
-                        if (isFavorite) {
-                            Icon(
-                                imageVector = Icons.Filled.Favorite,
-                                contentDescription = stringResource(R.string.favorite_icon_description),
-                                tint = Color.Red
-                            )
-                        } else {
-                            Icon(
-                                imageVector = Icons.Filled.FavoriteBorder,
-                                contentDescription = stringResource(R.string.favorite_icon_description),
-                                tint = LocalContentColor.current
-                            )
-                        }
-                    }
-                }
-            )
+        items(contacts) { contact ->
+            ContactListItem(contact = contact)
         }
     }
+}
+
+@Composable
+fun ContactListItem(modifier: Modifier = Modifier, contact: Contact) {
+    val isFavoriteState: MutableState<Boolean> = rememberSaveable {
+        mutableStateOf(contact.isFavorite)
+    }
+    ListItem(
+        modifier = modifier,
+        headlineContent = {
+            Text(contact.fullName)
+        },
+        trailingContent = {
+            IconButton(
+                onClick = {
+                    isFavoriteState.value = !isFavoriteState.value
+                }
+            ) {
+                if (isFavoriteState.value) {
+                    Icon(
+                        imageVector = Icons.Filled.Favorite,
+                        contentDescription = stringResource(R.string.favorite_icon_description),
+                        tint = Color.Red
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Filled.FavoriteBorder,
+                        contentDescription = stringResource(R.string.favorite_icon_description),
+                        tint = LocalContentColor.current
+                    )
+                }
+            }
+        }
+    )
 }
 
 ///////////////////////////////////////
@@ -250,7 +263,7 @@ private fun generateContacts(): List<Contact> {
     val firstNames = listOf("Ana", "Bruno", "Carlos", "Daniela", "Eduardo", "Fernanda", "Gabriel", "Helena", "Igor", "Juliana")
     val lastNames = listOf("Almeida", "Barbosa", "Cardoso", "Dias", "Esteves", "Ferreira", "Gomes", "Henriques", "Ibrahim", "Jardim")
     val contacts: MutableList<Contact> = mutableListOf()
-    for (i in 0 until 20) {
+    for (i in 0 until 15) {
         var generatedNewContact = false
         while (!generatedNewContact) {
             val firstNameIndex = Random.nextInt(firstNames.size)
