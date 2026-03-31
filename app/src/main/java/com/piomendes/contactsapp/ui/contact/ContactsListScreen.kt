@@ -23,6 +23,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -37,10 +38,29 @@ import androidx.compose.ui.unit.dp
 import com.piomendes.contactsapp.R
 import com.piomendes.contactsapp.data.Contact
 import com.piomendes.contactsapp.ui.theme.ContactsAppTheme
+import kotlin.random.Random
 
 @Composable
 fun ContactsListScreen(modifier: Modifier = Modifier) {
+    var isLoading = true
+    var isError = false
+    var contacts = listOf<Contact>() //generateContacts()
 
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = { AppBar() }
+    ) { paddingValues ->
+        val defaultModifier: Modifier = Modifier.padding(paddingValues)
+        if (isLoading) {
+            LoadingState(modifier = defaultModifier)
+        } else if (isError) {
+            ErrorState(modifier = defaultModifier)
+        } else if (contacts.isEmpty()) {
+            EmptyList(modifier = defaultModifier)
+        } else {
+            List(modifier = defaultModifier, contacts = contacts)
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -222,28 +242,35 @@ fun EmptyListPreview() {
 @Composable
 fun ListPreview() {
     ContactsAppTheme() {
-        List(
-            contacts = listOf (
-                Contact(1, "Alice", "Almeida", "4191234-5678", "alice.almeida@gmail.com", false),
-                Contact(2, "Bruno", "Barbosa", "4199157-4812", "bruno.barbosa@gmail.com", true),
-                Contact(3, "Carlos", "Cardoso", "4198765-4321", "carlos.cardoso@gmail.com", true),
-                Contact(4, "Daniel", "Dias", "4199988-7755", "daniel.dias@gmail.com", false),
-                Contact(5, "Eduardo", "Esteves", "4199123-1111", "eduardo.esteves@gmail.com", false),
-                Contact(6, "Fernanda", "Ferreira", "4199345-2222", "fernanda.ferreira@gmail.com", true),
-                Contact(7, "Gabriel", "Gomes", "4199567-3333", "gabriel.gomes@gmail.com", false),
-                Contact(8, "Helena", "Holanda", "4199789-4444", "helena.henrique@gmail.com", true),
-                Contact(9, "Igor", "Ibrahim", "4199012-5555", "igor.ibrahim@gmail.com", false),
-                Contact(10, "Juliana", "Jardim", "4199234-6666", "juliana.jardim@gmail.com", true),
-                Contact(11, "Kaio", "Klein", "4199456-7777", "kaio.klein@gmail.com", false),
-                Contact(12, "Larissa", "Lima", "4199678-8888", "larissa.lima@gmail.com", true),
-                Contact(13, "Marco", "Mendes", "4199890-9999", "marcos.mendes@gmail.com", false),
-                Contact(14, "Natália", "Nogueira", "4199001-1010", "natalia.nogueira@gmail.com", true),
-                Contact(15, "Otávio", "Oliveira", "4199222-2020", "otavio.oliveira@gmail.com", false),
-                Contact(16, "Paula", "Pereira", "4199333-3030", "paula.pereira@gmail.com", true),
-                Contact(17, "Quésia", "Queiroz", "4199444-4040", "quesia.queiroz@gmail.com", false),
-                Contact(18, "Rafael", "Ribeiro", "4199555-5050", "rafael.ribeiro@gmail.com", true),
-                Contact(19, "Sabrina", "Silva", "4199666-6060", "sabrina.silva@gmail.com", false),
-                Contact(20, "Tiago", "Teixeira", "4199777-7070", "tiago.teixeira@gmail.com", true)            )
-        )
+        List(contacts = generateContacts())
     }
+}
+
+private fun generateContacts(): List<Contact> {
+    val firstNames = listOf("Ana", "Bruno", "Carlos", "Daniela", "Eduardo", "Fernanda", "Gabriel", "Helena", "Igor", "Juliana")
+    val lastNames = listOf("Almeida", "Barbosa", "Cardoso", "Dias", "Esteves", "Ferreira", "Gomes", "Henriques", "Ibrahim", "Jardim")
+    val contacts: MutableList<Contact> = mutableListOf()
+    for (i in 0 until 20) {
+        var generatedNewContact = false
+        while (!generatedNewContact) {
+            val firstNameIndex = Random.nextInt(firstNames.size)
+            val lastNameIndex = Random.nextInt(lastNames.size)
+            val firstName = firstNames[firstNameIndex]
+            val lastName = lastNames[lastNameIndex]
+            val fullName = "$firstName $lastName"
+            val phoneNumber = buildString {
+                append("(XX) 9")
+                repeat(4) { append(Random.nextInt(0, 10)) }
+                append("-")
+                repeat(4) { append(Random.nextInt(0, 10)) }
+            }
+            val email = "${firstName.lowercase()}.${lastName.lowercase()}@gmail.com"
+            val newContact = Contact(id = i + 1, firstName = firstName, lastName = lastName, phoneNumber = phoneNumber, email = email, isFavorite = Random.nextBoolean())
+            if (contacts.none { it.fullName == fullName }) {
+                contacts.add(newContact)
+                generatedNewContact = true
+            }
+        }
+    }
+    return contacts
 }
