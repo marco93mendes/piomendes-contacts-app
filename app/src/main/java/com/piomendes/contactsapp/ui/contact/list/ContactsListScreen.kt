@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.piomendes.contactsapp.R
 import com.piomendes.contactsapp.data.Contact
+import com.piomendes.contactsapp.ui.shared.composables.ContactAvatar
 import com.piomendes.contactsapp.ui.theme.ContactsAppTheme
 import kotlin.random.Random
 
@@ -238,6 +239,12 @@ fun ContactListItem(
         modifier = modifier,
         headlineContent = {
             Text(contact.fullName)
+        },
+        leadingContent =  {
+            ContactAvatar(
+                firstName = contact.firstName,
+                lastName = contact.lastName
+            )
         },
         trailingContent = {
             IconButton(
