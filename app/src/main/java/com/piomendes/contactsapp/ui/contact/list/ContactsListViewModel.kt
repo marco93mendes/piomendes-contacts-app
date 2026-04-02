@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.piomendes.contactsapp.data.Contact
+import com.piomendes.contactsapp.data.groupByInitial
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.random.Random
@@ -27,25 +28,30 @@ class ContactsListViewModel : ViewModel() {
                 uiState.value = uiState.value.copy(isLoading = false, hasError = true)
             }
             else {
-                val isEmpty = Random.nextBoolean()
+                val isEmpty = false//Random.nextBoolean()
                 if (isEmpty)
-                    uiState.value = uiState.value.copy(isLoading = false, contacts = emptyList(), )
+                    uiState.value = uiState.value.copy(isLoading = false, contacts = emptyMap() )
                 else
-                    uiState.value = uiState.value.copy(isLoading = false, contacts = generateContacts())
+                    uiState.value = uiState.value.copy(
+                        isLoading = false,
+                        contacts = generateContacts().groupByInitial()
+                    )
             }
         }
     }
 
-    fun toggleIsFavorite(updated: Contact) {
-        uiState.value = uiState.value.copy(
-            contacts = uiState.value.contacts.map { current ->
-                if (current.id == updated.id) {
-                    current.copy(isFavorite = !current.isFavorite)
+    fun toggleIsFavorite(updatedContact: Contact) {
+        val newMap: MutableMap<String, List<Contact>> = mutableMapOf()
+        uiState.value.contacts.forEach { (key, listContacts) ->
+            newMap[key] = listContacts.map { currentContact ->
+                if (currentContact.id == updatedContact.id) {
+                    currentContact.copy(isFavorite = !currentContact.isFavorite)
                 } else {
-                    current
+                    currentContact
                 }
             }
-        )
+        }
+        uiState.value = uiState.value.copy(contacts = newMap)
     }
 
 }

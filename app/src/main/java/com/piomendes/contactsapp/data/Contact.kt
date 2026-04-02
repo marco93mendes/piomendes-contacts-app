@@ -10,3 +10,7 @@ data class Contact(
 ) {
     val fullName get() = "$firstName $lastName".trim()
 }
+
+fun List<Contact>.groupByInitial() : Map<String, List<Contact>> {
+    return sortedBy { it.fullName } .groupBy { it.fullName.take(1) }
+}

@@ -5,5 +5,5 @@ import com.piomendes.contactsapp.data.Contact
 data class ContactsListUiState(
     val isLoading: Boolean = false,
     val hasError: Boolean = false,
-    val contacts: List<Contact> = emptyList()
+    val contacts: Map<String, List<Contact>> = emptyMap()
 )

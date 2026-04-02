@@ -1,7 +1,9 @@
 package com.piomendes.contactsapp.ui.contact.list
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -42,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.piomendes.contactsapp.R
 import com.piomendes.contactsapp.data.Contact
+import com.piomendes.contactsapp.data.groupByInitial
 import com.piomendes.contactsapp.ui.shared.composables.ContactAvatar
 import com.piomendes.contactsapp.ui.theme.ContactsAppTheme
 import kotlin.random.Random
@@ -70,7 +73,7 @@ fun ContactsListScreen(
             },
             floatingActionButton = {
                 ExtendedFloatingActionButton(onClick = {
-                    // TODO - navegate to form
+                    // TODO - navigate to form
                 }) {
                     Icon(
                         imageVector = Icons.Filled.Add,
@@ -217,14 +220,31 @@ fun EmptyList(modifier: Modifier = Modifier) {
 @Composable
 fun List(
     modifier: Modifier = Modifier,
-    contacts: List<Contact> = emptyList(),
+    contacts: Map<String, List<Contact>> = emptyMap(),
     onFavoritePressed: (Contact) -> Unit = {}
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize()
     ) {
-        items(contacts) { contact ->
-            ContactListItem(contact = contact, onFavoritePressed = onFavoritePressed)
+        contacts.forEach { (key, contacts) ->
+            stickyHeader {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(color = MaterialTheme.colorScheme.secondaryContainer)
+                ) {
+                    Text(
+                        text = key,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp, bottom = 8.dp, start = 16.dp),
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                }
+            }
+            items(contacts) { contact ->
+                ContactListItem(contact = contact, onFavoritePressed = onFavoritePressed)
+            }
         }
     }
 }
@@ -314,35 +334,40 @@ fun EmptyListPreview() {
 @Composable
 fun ListPreview() {
     ContactsAppTheme() {
-        List(contacts = generateContacts(), onFavoritePressed = {})
+        List(
+            contacts = generateContacts().groupByInitial(),
+            onFavoritePressed = {}
+        )
     }
 }
 
 fun generateContacts(): List<Contact> {
+    val contacts = mutableListOf<Contact>()
     val firstNames = listOf("Ana", "Bruno", "Carlos", "Daniela", "Eduardo", "Fernanda", "Gabriel", "Helena", "Igor", "Juliana")
     val lastNames = listOf("Almeida", "Barbosa", "Cardoso", "Dias", "Esteves", "Ferreira", "Gomes", "Henriques", "Ibrahim", "Jardim")
-    val contacts: MutableList<Contact> = mutableListOf()
-    for (i in 0 until 15) {
-        var generatedNewContact = false
-        while (!generatedNewContact) {
-            val firstNameIndex = Random.nextInt(firstNames.size)
-            val lastNameIndex = Random.nextInt(lastNames.size)
-            val firstName = firstNames[firstNameIndex]
-            val lastName = lastNames[lastNameIndex]
-            val fullName = "$firstName $lastName"
-            val phoneNumber = buildString {
-                append("(XX) 9")
-                repeat(4) { append(Random.nextInt(0, 10)) }
-                append("-")
-                repeat(4) { append(Random.nextInt(0, 10)) }
-            }
-            val email = "${firstName.lowercase()}.${lastName.lowercase()}@gmail.com"
-            val newContact = Contact(id = i + 1, firstName = firstName, lastName = lastName, phoneNumber = phoneNumber, email = email, isFavorite = Random.nextBoolean())
-            if (contacts.none { it.fullName == fullName }) {
-                contacts.add(newContact)
-                generatedNewContact = true
-            }
+    for (i in 0 until 20) {
+        var firstName: String
+        var lastName: String
+        var fullName: String
+        do {
+            firstName = firstNames.random()
+            lastName = lastNames.random()
+            fullName = "$firstName $lastName"
+        } while (contacts.any { it.fullName == fullName })
+        val email = "${firstName.lowercase()}.${lastName.lowercase()}@mail.com"
+        val phoneNumber = buildString {
+            append("(XX) 9")
+            repeat(8) { append(Random.nextInt(0, 10)) }
         }
+        val newContact = Contact(
+            id = i + 1,
+            firstName = firstName,
+            lastName = lastName,
+            phoneNumber = phoneNumber,
+            email = email,
+            isFavorite = Random.nextBoolean()
+        )
+        contacts.add(newContact)
     }
     return contacts
 }
