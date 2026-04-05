@@ -12,5 +12,6 @@
     <string name="favorite_icon_description">Favorite icon</string>
     <string name="add_contact_description">add new contact icon</string>
     <string name="refresh_button">Refresh</string>
+    <string name="loading">Loading...</string>
 
 </resources>

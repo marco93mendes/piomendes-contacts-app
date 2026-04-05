@@ -28,7 +28,7 @@ class ContactsListViewModel : ViewModel() {
                 uiState.value = uiState.value.copy(isLoading = false, hasError = true)
             }
             else {
-                val isEmpty = false//Random.nextBoolean()
+                val isEmpty = Random.nextBoolean() //TODO
                 if (isEmpty)
                     uiState.value = uiState.value.copy(isLoading = false, contacts = emptyMap() )
                 else
