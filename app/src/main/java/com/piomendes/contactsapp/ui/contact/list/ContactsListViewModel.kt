@@ -1,14 +1,14 @@
 package com.piomendes.contactsapp.ui.contact.list
 
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.piomendes.contactsapp.data.Contact
+import com.piomendes.contactsapp.data.ContactDatasource
 import com.piomendes.contactsapp.data.groupByInitial
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.random.Random
 
 class ContactsListViewModel : ViewModel() {
     val uiState: MutableState<ContactsListUiState> = mutableStateOf(ContactsListUiState())
@@ -21,37 +21,28 @@ class ContactsListViewModel : ViewModel() {
         uiState.value = uiState.value.copy(isLoading = true, hasError = false)
 
         viewModelScope.launch {
-            delay(2000)
-            val hasError = Random.nextBoolean()
-
-            if (hasError) {
-                uiState.value = uiState.value.copy(isLoading = false, hasError = true)
-            }
-            else {
-                val isEmpty = Random.nextBoolean() //TODO
-                if (isEmpty)
-                    uiState.value = uiState.value.copy(isLoading = false, contacts = emptyMap() )
-                else
-                    uiState.value = uiState.value.copy(
-                        isLoading = false,
-                        contacts = generateContacts().groupByInitial()
-                    )
-            }
+           uiState.value = try {
+               uiState.value.copy(
+                   isLoading = false,
+                   contacts = ContactDatasource.instance.findAll().groupByInitial()
+               )
+           } catch (ex: Exception) {
+                Log.e("ContactsListViewModel", "Error loading contacts", ex)
+                uiState.value.copy(isLoading = false, hasError = true)
+           }
         }
     }
 
-    fun toggleIsFavorite(updatedContact: Contact) {
-        val newMap: MutableMap<String, List<Contact>> = mutableMapOf()
-        uiState.value.contacts.forEach { (key, listContacts) ->
-            newMap[key] = listContacts.map { currentContact ->
-                if (currentContact.id == updatedContact.id) {
-                    currentContact.copy(isFavorite = !currentContact.isFavorite)
-                } else {
-                    currentContact
-                }
-            }
+    fun toggleIsFavorite(contact: Contact) {
+        try {
+            val updatedContact = contact.copy(isFavorite = !contact.isFavorite)
+            ContactDatasource.instance.save(updatedContact)
+            uiState.value = uiState.value.copy(
+                contacts = ContactDatasource.instance.findAll().groupByInitial()
+            )
+        } catch (ex: Exception) {
+            Log.e("ContactsListViewModel", "Error toggling favorite", ex)
         }
-        uiState.value = uiState.value.copy(contacts = newMap)
     }
 
 }
