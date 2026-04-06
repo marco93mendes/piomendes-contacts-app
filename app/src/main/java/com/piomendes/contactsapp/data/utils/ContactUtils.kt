@@ -17,7 +17,7 @@ fun generateContacts(): List<Contact> {
             lastName = lastNames.random()
             fullName = "$firstName $lastName"
         } while (contacts.any { it.fullName == fullName })
-        val email = "${firstName.lowercase()}.${lastName.lowercase()}@mail.com"
+        val email = "${fullName.lowercase()}@mail.com"
         val phoneNumber = buildString {
             append("(XX) 9")
             repeat(8) { append(Random.nextInt(0, 10)) }

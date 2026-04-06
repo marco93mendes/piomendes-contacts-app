@@ -49,11 +49,10 @@ fun ContactsListScreen(
     modifier: Modifier = Modifier,
     viewModel: ContactsListViewModel = viewModel()
 ) {
-
     val contentModifier = modifier.fillMaxSize()
-    if (viewModel.uiState.value.isLoading) {
+    if (viewModel.uiState.isLoading) {
         DefaultLoadingState(modifier = contentModifier, loadingMessage = R.string.loading_contacts)
-    } else if (viewModel.uiState.value.hasError) {
+    } else if (viewModel.uiState.hasError) {
         DefaultErrorState(
             modifier = contentModifier,
             onReloadPressed = viewModel::loadContacts
@@ -63,7 +62,7 @@ fun ContactsListScreen(
             modifier = modifier.fillMaxSize(),
             topBar = {
                 AppBar(
-                    onRefreshPressed = viewModel::loadContacts
+                    onReloadPressed = viewModel::loadContacts
                 )
             },
             floatingActionButton = {
@@ -80,12 +79,12 @@ fun ContactsListScreen(
             }
         ) { paddingValues ->
             val defaultModifier: Modifier = Modifier.padding(paddingValues)
-            if (viewModel.uiState.value.contacts.isEmpty()) {
+            if (viewModel.uiState.contacts.isEmpty()) {
                 EmptyList(modifier = defaultModifier)
             } else {
                 List(
                     modifier = defaultModifier,
-                    contacts = viewModel.uiState.value.contacts,
+                    contacts = viewModel.uiState.contacts,
                     onFavoritePressed = viewModel::toggleIsFavorite
                 )
             }
@@ -97,7 +96,7 @@ fun ContactsListScreen(
 @Composable
 fun AppBar(
     modifier: Modifier = Modifier,
-    onRefreshPressed: () -> Unit
+    onReloadPressed: () -> Unit
 ) {
     TopAppBar(
         modifier = modifier.fillMaxWidth(),
@@ -107,7 +106,7 @@ fun AppBar(
             actionIconContentColor = MaterialTheme.colorScheme.primary
         ),
         actions = {
-            IconButton(onClick = onRefreshPressed) {
+            IconButton(onClick = onReloadPressed) {
                 Icon(
                     imageVector = Icons.Filled.Refresh,
                     contentDescription = stringResource(R.string.refresh_button)
@@ -216,7 +215,7 @@ fun ContactListItem(
 fun AppBarPreview() {
     ContactsAppTheme {
         AppBar(
-            onRefreshPressed = {}
+            onReloadPressed = {}
         )
     }
 }
