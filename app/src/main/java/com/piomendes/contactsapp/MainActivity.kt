@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.piomendes.contactsapp.ui.contact.list.ContactsListScreen
+import com.piomendes.contactsapp.ui.AppContactsNavHost
 import com.piomendes.contactsapp.ui.theme.ContactsAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -13,7 +13,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ContactsAppTheme {
-                ContactsListScreen()
+                AppContactsNavHost()
             }
         }
     }

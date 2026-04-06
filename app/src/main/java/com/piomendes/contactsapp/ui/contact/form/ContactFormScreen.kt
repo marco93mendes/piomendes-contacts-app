@@ -19,10 +19,18 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.piomendes.contactsapp.ui.theme.ContactsAppTheme
 
 @Composable
-fun ContactFormScreen(modifier: Modifier = Modifier) {
+fun ContactFormScreen(
+    modifier: Modifier = Modifier,
+    onBackPressed: () -> Unit
+) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        topBar = { AppBar(isNewContact = true, onBackPressed = {}) },
+        topBar = {
+            AppBar(
+                isNewContact = true,
+                onBackPressed = onBackPressed
+            )
+        },
     ) { paddingValues ->
         Text(
             text = "Edit",
@@ -66,7 +74,7 @@ private class BooleanParameterProvider : PreviewParameterProvider<Boolean> {
 @Composable
 private fun ContactFormScreenPreview() {
     ContactsAppTheme() {
-        ContactFormScreen()
+        ContactFormScreen(onBackPressed = {})
     }
 }
 
