@@ -8,22 +8,19 @@ fun generateContacts(): List<Contact> {
     val contacts = mutableListOf<Contact>()
     val firstNames = listOf("Ana", "Bruno", "Carlos", "Daniela", "Eduardo", "Fernanda", "Gabriel", "Helena", "Igor", "Juliana")
     val lastNames = listOf("Almeida", "Barbosa", "Cardoso", "Dias", "Esteves", "Ferreira", "Gomes", "Henriques", "Ibrahim", "Jardim")
-    for (i in 0 until 20) {
-        var firstName: String
-        var lastName: String
-        var fullName: String
-        do {
+    for (i in 1 .. 20) {
+        var firstName = firstNames.random()
+        var lastName = lastNames.random()
+        var fullName = "$firstName $lastName"
+        while (contacts.any { it.fullName == fullName }) {
             firstName = firstNames.random()
             lastName = lastNames.random()
             fullName = "$firstName $lastName"
-        } while (contacts.any { it.fullName == fullName })
-        val email = "${fullName.lowercase()}@mail.com"
-        val phoneNumber = buildString {
-            append("(XX) 9")
-            repeat(8) { append(Random.nextInt(0, 10)) }
         }
+        val email = "${fullName.lowercase()}@mail.com"
+        val phoneNumber = "(XX) 9 ${Random.nextInt(1000, 9999)}-${Random.nextInt(1000, 9999)}"
         val newContact = Contact(
-            id = i + 1,
+            id = i,
             firstName = firstName,
             lastName = lastName,
             phoneNumber = phoneNumber,

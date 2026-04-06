@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.piomendes.contactsapp.data.Contact
 import com.piomendes.contactsapp.data.ContactDatasource
 import com.piomendes.contactsapp.data.groupByInitial
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class ContactsListViewModel : ViewModel() {
@@ -23,6 +24,7 @@ class ContactsListViewModel : ViewModel() {
     fun loadContacts() {
         uiState = uiState.copy(isLoading = true, hasError = false)
         viewModelScope.launch {
+            delay(2000)
            uiState = try {
                uiState.copy(
                    isLoading = false,
