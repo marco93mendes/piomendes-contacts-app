@@ -43,7 +43,7 @@ fun FormRadioButton(
 
 @Preview(showBackground = true)
 @Composable
-fun FormRadioButtonPreview() {
+private fun FormRadioButtonPreview() {
     ContactsAppTheme {
         var groupValue by remember { mutableStateOf(ContactTypeEnum.PROFESSIONAL) }
         Column {

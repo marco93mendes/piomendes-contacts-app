@@ -39,7 +39,7 @@ fun FormCheckbox(
 
 @Preview(showBackground = true)
 @Composable
-fun FormCheckboxPreview() {
+private fun FormCheckboxPreview() {
     var checked by remember { mutableStateOf(true) }
     ContactsAppTheme {
         FormCheckbox(
