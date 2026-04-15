@@ -11,7 +11,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
-class ContactFormViwModel(
+class ContactFormViewModel(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -28,7 +28,7 @@ class ContactFormViwModel(
         }
     }
 
-    private fun loadContact() {
+    fun loadContact() {
         uiState = uiState.copy(isLoading = true, hasErrorLoading = false)
 
         viewModelScope.launch {
