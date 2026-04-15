@@ -12,12 +12,12 @@ enum class ContactTypeEnum {
 
 data class Contact(
     val id: Int = 0,
-    val firstName: String,
-    val lastName: String,
+    val firstName: String = "",
+    val lastName: String = "",
     val phoneNumber: String = "",
     val email: String = "",
     val isFavorite: Boolean = false,
-    val createdAr: LocalDateTime = LocalDateTime.now(),
+    val createdAt: LocalDateTime = LocalDateTime.now(),
     val birthDate: LocalDate = LocalDate.now(),
     val type: ContactTypeEnum = ContactTypeEnum.PERSONAL,
     val assetValue: BigDecimal = BigDecimal.ZERO

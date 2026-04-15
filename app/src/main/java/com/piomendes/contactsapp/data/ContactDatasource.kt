@@ -18,7 +18,7 @@ class ContactDatasource private constructor(){
 
     fun findAll(): List<Contact> = contacts.toList()
 
-    fun finById(id: Int): Contact? = contacts.firstOrNull { it.id == id }
+    fun findById(id: Int): Contact? = contacts.firstOrNull { it.id == id }
 
     fun save(contact: Contact): Contact {
         if (contact.id > 0) {

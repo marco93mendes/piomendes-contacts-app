@@ -23,7 +23,7 @@ fun FormRadioButton(
     modifier: Modifier = Modifier,
     label: String,
     value: ContactTypeEnum,
-    groupVale: ContactTypeEnum,
+    groupValue: ContactTypeEnum,
     onValueChanged: (ContactTypeEnum) -> Unit,
     enabled: Boolean = true
 ) {
@@ -33,7 +33,7 @@ fun FormRadioButton(
         verticalAlignment = Alignment.CenterVertically
     ) {
         RadioButton(
-            selected = value == groupVale,
+            selected = value == groupValue,
             onClick = { onValueChanged(value) },
             enabled = enabled
         )
@@ -51,7 +51,7 @@ private fun FormRadioButtonPreview() {
                 modifier = Modifier.padding(20.dp),
                 label = "Personal",
                 value = ContactTypeEnum.PERSONAL,
-                groupVale = groupValue,
+                groupValue = groupValue,
                 onValueChanged = { newValue ->
                     groupValue = newValue
                 }
@@ -60,7 +60,7 @@ private fun FormRadioButtonPreview() {
                 modifier = Modifier.padding(20.dp),
                 label = "Professional",
                 value = ContactTypeEnum.PROFESSIONAL,
-                groupVale = groupValue,
+                groupValue = groupValue,
                 onValueChanged = { newValue ->
                     groupValue = newValue
                 }
