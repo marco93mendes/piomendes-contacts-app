@@ -1,4 +1,4 @@
-package com.piomendes.contactsapp.ui.contact.form.composables
+package com.piomendes.contactsapp.ui.contact.form
 
 import com.piomendes.contactsapp.data.Contact
 
