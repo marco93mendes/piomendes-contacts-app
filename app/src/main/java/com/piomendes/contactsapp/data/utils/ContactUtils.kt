@@ -17,7 +17,7 @@ fun generateContacts(): List<Contact> {
             lastName = lastNames.random()
             fullName = "$firstName $lastName"
         }
-        val email = "${fullName.lowercase()}@mail.com"
+        val email = "${(firstName + lastName).lowercase().replace(" ", "")}@mail.com"
         val phoneNumber = "(XX) 9 ${Random.nextInt(1000, 9999)}-${Random.nextInt(1000, 9999)}"
         val newContact = Contact(
             id = i,
