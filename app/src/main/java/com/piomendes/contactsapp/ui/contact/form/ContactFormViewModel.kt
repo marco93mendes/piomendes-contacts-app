@@ -7,8 +7,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.piomendes.contactsapp.data.ContactDatasource
+import com.piomendes.contactsapp.data.ContactTypeEnum
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
+import java.time.LocalDate
 import kotlin.random.Random
 
 class ContactFormViewModel(
@@ -38,11 +41,156 @@ class ContactFormViewModel(
             uiState = if (contact == null || hasError) {
                 uiState.copy(isLoading = false, hasErrorLoading = true)
             } else {
-                uiState.copy(isLoading = false, contact = contact)
+                uiState.copy(
+                    isLoading = false,
+                    contact = contact,
+                    formState = FormState(
+                        firstName = FormField(contact.firstName),
+                        lastName = FormField(contact.lastName),
+                        phoneNumber = FormField(contact.phoneNumber),
+                        email = FormField(contact.email),
+                        birthDate = FormField(contact.birthDate),
+                        assetValue = FormField(contact.assetValue.toString()),
+                        isFavorite = FormField(contact.isFavorite),
+                        type = FormField(contact.type)
+                    )
+                )
             }
         }
+    }
 
+    fun onFormEvent(event: FormEvent) {
+        when(event) {
+            is FormEvent.UpdateType -> onTypeChanged(event.newValue)
+            is FormEvent.UpdateEmail -> onEmailChanged(event.newValue)
+            is FormEvent.UpdateLastName -> onLastNameChange(event.newValue)
+            is FormEvent.UpdateFirstName -> onFirstNameChange(event.newValue)
+            is FormEvent.UpdateBirthDate -> onBirthDateChanged(event.newValue)
+            is FormEvent.UpdateAssetValue -> onAssetValueChanged(event.newValue)
+            is FormEvent.UpdateIsFavorite -> onIsFavoriteChanged(event.newValue)
+            is FormEvent.UpdatePhoneNumber -> onPhoneNumberChange(event.newValue)
+        }
     }
 
 
-}
+    private fun onFirstNameChange(newValue: String) {
+        if (uiState.formState.firstName.value == newValue) return
+
+        uiState = uiState.copy(
+            formState = uiState.formState.copy(
+                firstName = FormField(
+                    value = newValue,
+                    errorMessage = validateFirstName(newValue)
+                )
+            )
+        )
+    }
+
+    private fun validateFirstName(value: String): String {
+        if (value.isBlank()) return "This field is required"
+        return ""
+    }
+
+    private fun onLastNameChange(newValue: String) {
+        if (uiState.formState.lastName.value == newValue) return
+        uiState = uiState.copy(
+            formState = uiState.formState.copy(
+                lastName = FormField(
+                    value = newValue,
+                    //errorMessage = THIS FIELD IS NOT REQUIRED
+                )
+            )
+        )
+    }
+
+    private fun onPhoneNumberChange(newValue: String) {
+        if (uiState.formState.phoneNumber.value == newValue) return
+        uiState = uiState.copy(
+            formState = uiState.formState.copy(
+                phoneNumber = FormField(
+                    value = newValue,
+                    errorMessage = validatePhoneNumber(newValue)
+                )
+            )
+        )
+    }
+
+    private fun validatePhoneNumber(value: String): String {
+        if (value.isBlank() ||
+            (value.length in 10..11
+            && !value.contains(Regex("\\D"))))
+                return ""
+        return "Invalid phone number (only numbers)"
+    }
+
+
+    private fun onEmailChanged(newValue: String) {
+        if (uiState.formState.email.value == newValue) return
+        uiState = uiState.copy(
+            formState = uiState.formState.copy(
+                email = FormField(
+                    value = newValue,
+                    errorMessage = validateEmail(newValue)
+                )
+            )
+        )
+    }
+
+    private fun validateEmail(value: String): String {
+        if (value.isNotBlank()
+            && !Regex(pattern = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$").matches(value)
+            ) return "Invalid email"
+        return ""
+    }
+
+    private fun onIsFavoriteChanged(newValue: Boolean) {
+        if (uiState.formState.isFavorite.value == newValue) return
+        uiState = uiState.copy(
+            formState = uiState.formState.copy(
+                isFavorite = FormField(value = newValue)
+            )
+        )
+    }
+
+    private fun onAssetValueChanged(newValue: String) {
+        if (uiState.formState.assetValue.value == newValue) return
+        uiState = uiState.copy(
+            formState = uiState.formState.copy(
+                assetValue = FormField(
+                    value = newValue,
+                    errorMessage = validateAssetValue(newValue)
+                )
+            )
+        )
+    }
+
+    private fun validateAssetValue(value: String): String {
+        if (value.isBlank()) return ""
+        try {
+            BigDecimal(value)
+            return ""
+        } catch (_: NumberFormatException) {
+            return "Invalid asset value"
+        }
+    }
+
+    private fun onBirthDateChanged(newValue: LocalDate) {
+        if (uiState.formState.birthDate.value == newValue) return
+        uiState = uiState.copy(
+            formState = uiState.formState.copy(
+                birthDate = FormField(value = newValue)
+            )
+        )
+    }
+
+    private fun onTypeChanged(newValue: ContactTypeEnum) {
+        if (uiState.formState.type.value == newValue) return
+        uiState = uiState.copy(
+            formState = uiState.formState.copy(
+                type = FormField(value = newValue)
+            )
+        )
+    }
+
+
+} //end of ContactFormViewModel

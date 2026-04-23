@@ -78,7 +78,8 @@ fun ContactFormScreen(
         ) { paddingValues ->
             FormContent(
                 modifier = Modifier.padding(paddingValues),
-                contact = viewModel.uiState.contact
+                formState = viewModel.uiState.formState,
+                onFormEvent = viewModel::onFormEvent
             )
         }
     }
@@ -131,7 +132,8 @@ private fun AppBarPreview(
 @Composable
 fun FormContent(
     modifier: Modifier = Modifier,
-    contact: Contact
+    formState: FormState,
+    onFormEvent: (FormEvent) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -146,8 +148,8 @@ fun FormContent(
 
         ContactAvatar(
             modifier = Modifier.padding(16.dp),
-            firstName = contact.firstName,
-            lastName = contact.lastName,
+            firstName = formState.firstName.value,
+            lastName = formState.lastName.value,
             size = 150.dp,
             textStyle = MaterialTheme.typography.displayLarge
         )
@@ -159,8 +161,11 @@ fun FormContent(
             FormTextField(
                 modifier = formTextFieldModifier,
                 label = "First Name",
-                value = contact.firstName,
-                onValueChange = {},
+                value = formState.firstName.value,
+                onValueChange = { newValue ->
+                    onFormEvent(FormEvent.UpdateFirstName(newValue))
+                },
+                errorMessage = formState.firstName.errorMessage,
                 keyboardCapitalization = KeyboardCapitalization.Words
 
             )
@@ -172,8 +177,11 @@ fun FormContent(
             FormTextField(
                 modifier = formTextFieldModifier,
                 label = "Last Name",
-                value = contact.lastName,
-                onValueChange = {},
+                value = formState.lastName.value,
+                onValueChange = { newValue ->
+                    onFormEvent(FormEvent.UpdateLastName(newValue))
+                },
+                errorMessage = formState.lastName.errorMessage,
                 keyboardCapitalization = KeyboardCapitalization.Words
             )
         }
@@ -185,8 +193,11 @@ fun FormContent(
             FormTextField(
                 modifier = formTextFieldModifier,
                 label = "Phone Number",
-                value = contact.phoneNumber,
-                onValueChange = {},
+                value = formState.phoneNumber.value,
+                onValueChange = { newValue ->
+                    onFormEvent(FormEvent.UpdatePhoneNumber(newValue))
+                },
+                errorMessage = formState.phoneNumber.errorMessage,
                 keyboardType = KeyboardType.Phone
             )
         }
@@ -198,8 +209,11 @@ fun FormContent(
             FormTextField(
                 modifier = formTextFieldModifier,
                 label = "Email",
-                value = contact.email,
-                onValueChange = {},
+                value = formState.email.value,
+                onValueChange = { newValue ->
+                    onFormEvent(FormEvent.UpdateEmail(newValue))
+                },
+                errorMessage = formState.email.errorMessage,
                 keyboardType = KeyboardType.Email
             )
         }
@@ -210,8 +224,11 @@ fun FormContent(
             FormDatePicker(
                 modifier = formTextFieldModifier,
                 label = "Birth Date",
-                value = contact.birthDate,
-                onValueChange = {},
+                value = formState.birthDate.value,
+                onValueChange = { newValue ->
+                    onFormEvent(FormEvent.UpdateBirthDate(newValue))
+                },
+                errorMessage = formState.birthDate.errorMessage
             )
         }
 
@@ -222,8 +239,11 @@ fun FormContent(
             FormTextField(
                 modifier = formTextFieldModifier,
                 label = "Net Worth",
-                value = contact.assetValue.toString(),
-                onValueChange = {},
+                value = formState.assetValue.value,
+                onValueChange = { newValue ->
+                    onFormEvent(FormEvent.UpdateAssetValue(newValue))
+                },
+                errorMessage = formState.assetValue.errorMessage,
                 keyboardType = KeyboardType.Decimal
             )
         }
@@ -235,8 +255,10 @@ fun FormContent(
             FormCheckbox(
                 modifier = choiceOptionModifier,
                 label = "Favorite",
-                checked = contact.isFavorite,
-                onCheckedChange = {}
+                checked = formState.isFavorite.value,
+                onCheckedChange = { newValue ->
+                    onFormEvent(FormEvent.UpdateIsFavorite(newValue))
+                }
             )
         }
 
@@ -247,18 +269,21 @@ fun FormContent(
                 modifier = choiceOptionModifier,
                 label = "Personal",
                 value = ContactTypeEnum.PERSONAL,
-                groupValue = contact.type,
-                onValueChanged = {},
+                groupValue = formState.type.value,
+                onValueChanged = { newValue ->
+                    onFormEvent(FormEvent.UpdateType(newValue))
+                },
             )
             FormRadioButton(
                 modifier = choiceOptionModifier,
                 label = "Professional",
                 value = ContactTypeEnum.PROFESSIONAL,
-                groupValue = contact.type,
-                onValueChanged = {},
+                groupValue = formState.type.value,
+                onValueChanged = { newValue ->
+                    onFormEvent(FormEvent.UpdateType(newValue))
+                },
             )
         }
-
     }
 }
 
@@ -267,7 +292,8 @@ fun FormContent(
 private fun FormContentPreview() {
     ContactsAppTheme {
         FormContent(
-            contact = Contact()
+            formState = FormState(),
+            onFormEvent = {}
         )
     }
 }
