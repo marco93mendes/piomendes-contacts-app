@@ -1,5 +1,6 @@
 package com.piomendes.contactsapp.ui.contact.form
 
+import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -70,6 +71,43 @@ class ContactFormViewModel(
             is FormEvent.UpdateIsFavorite -> onIsFavoriteChanged(event.newValue)
             is FormEvent.UpdatePhoneNumber -> onPhoneNumberChange(event.newValue)
         }
+    }
+
+    fun save() {
+        if (uiState.isSaving || !isValidForm()) return
+
+        uiState = uiState.copy(isSaving = true, hasErrorSaving = false)
+
+        viewModelScope.launch {
+            delay(2000)
+            val hasError = Random.nextBoolean()
+            uiState = if (hasError) {
+                uiState.copy(isSaving = false, hasErrorSaving = true)
+            } else {
+                val contactToSave = uiState.contact.copy(
+                    firstName = uiState.formState.firstName.value,
+                    lastName = uiState.formState.lastName.value,
+                    phoneNumber = uiState.formState.phoneNumber.value,
+                    email = uiState.formState.email.value,
+                    birthDate = uiState.formState.birthDate.value,
+                    isFavorite = uiState.formState.isFavorite.value,
+                    type = uiState.formState.type.value,
+                    assetValue = uiState.formState.assetValue.value.let {
+                        if (it.isBlank()) {
+                            BigDecimal.ZERO
+                        } else {
+                            BigDecimal(uiState.formState.assetValue.value)
+                        }
+                    }
+                )
+                ContactDatasource.instance.save(contactToSave)
+                uiState.copy(
+                    isSaving = false,
+                    contactSaved = true
+                )
+            }
+        }
+
     }
 
 
@@ -190,6 +228,26 @@ class ContactFormViewModel(
                 type = FormField(value = newValue)
             )
         )
+    }
+
+    private fun isValidForm(): Boolean {
+        uiState = uiState.copy(
+            formState = uiState.formState.copy(
+                firstName = uiState.formState.firstName.copy(
+                    errorMessage = validateFirstName(uiState.formState.firstName.value)
+                ),
+                phoneNumber = uiState.formState.phoneNumber.copy(
+                    errorMessage = validatePhoneNumber(uiState.formState.phoneNumber.value)
+                ),
+                email = uiState.formState.email.copy(
+                    errorMessage = validateEmail(uiState.formState.email.value)
+                ),
+                assetValue = uiState.formState.assetValue.copy(
+                    errorMessage = validateAssetValue(uiState.formState.assetValue.value)
+                )
+            )
+        )
+        return uiState.formState.isValid
     }
 
 
