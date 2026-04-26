@@ -1,6 +1,5 @@
 package com.piomendes.contactsapp.ui.contact.form
 
-import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -36,7 +35,7 @@ class ContactFormViewModel(
         uiState = uiState.copy(isLoading = true, hasErrorLoading = false)
 
         viewModelScope.launch {
-            delay(2000)
+            delay(1000)
             val contact = ContactDatasource.instance.findById(contactId)
             val hasError = Random.nextBoolean()
             uiState = if (contact == null || hasError) {
@@ -74,15 +73,15 @@ class ContactFormViewModel(
     }
 
     fun save() {
-        if (uiState.isSaving || !isValidForm()) return
+        if (uiState.isProcessing || !isValidForm()) return
 
-        uiState = uiState.copy(isSaving = true, hasErrorSaving = false)
+        uiState = uiState.copy(isProcessing = true, processingErrorMessage = "")
 
         viewModelScope.launch {
-            delay(2000)
+            delay(1000)
             val hasError = Random.nextBoolean()
             uiState = if (hasError) {
-                uiState.copy(isSaving = false, hasErrorSaving = true)
+                uiState.copy(isProcessing = false, processingErrorMessage = "Error saving contact")
             } else {
                 val contactToSave = uiState.contact.copy(
                     firstName = uiState.formState.firstName.value,
@@ -102,13 +101,46 @@ class ContactFormViewModel(
                 )
                 ContactDatasource.instance.save(contactToSave)
                 uiState.copy(
-                    isSaving = false,
-                    contactSaved = true
+                    isProcessing = false,
+                    contactUpdated = true
                 )
             }
         }
-
     }
+
+    fun showConfirmationDialog() {
+        uiState = uiState.copy(showConfirmationDialog = true)
+    }
+
+    fun hideConfirmationDialog() {
+        uiState = uiState.copy(showConfirmationDialog = false)
+    }
+
+
+    fun delete() {
+        uiState = uiState.copy(
+            isProcessing = true,
+            processingErrorMessage = "",
+            showConfirmationDialog = false
+        )
+        viewModelScope.launch {
+            delay(1000)
+            val hasError = Random.nextBoolean()
+            uiState = if (hasError) {
+                uiState.copy(
+                    isProcessing = false,
+                    processingErrorMessage = "Error deleting contact"
+                )
+            } else {
+                ContactDatasource.instance.delete(uiState.contact)
+                uiState.copy(
+                    isProcessing = false,
+                    contactUpdated = true
+                )
+            }
+        }
+    }
+
 
 
     private fun onFirstNameChange(newValue: String) {

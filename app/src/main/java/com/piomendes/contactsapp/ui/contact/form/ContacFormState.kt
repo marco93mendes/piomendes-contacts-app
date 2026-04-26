@@ -42,9 +42,10 @@ data class ContactFormState(
     val contact: Contact = Contact(),
     val hasErrorLoading: Boolean = false,
     val formState: FormState = FormState(),
-    val isSaving: Boolean = false,
-    val hasErrorSaving: Boolean = false,
-    val contactSaved: Boolean = false
+    val isProcessing: Boolean = false,
+    val processingErrorMessage: String = "",
+    val contactUpdated: Boolean = false,
+    val showConfirmationDialog: Boolean = false,
 ) {
     val isNewContact: Boolean
         get() = contactId <= 0
