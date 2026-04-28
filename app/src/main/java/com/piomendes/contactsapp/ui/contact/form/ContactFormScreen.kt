@@ -46,6 +46,8 @@ import com.piomendes.contactsapp.ui.contact.form.composables.FormDatePicker
 import com.piomendes.contactsapp.ui.contact.form.composables.FormFieldRow
 import com.piomendes.contactsapp.ui.contact.form.composables.FormRadioButton
 import com.piomendes.contactsapp.ui.contact.form.composables.FormTextField
+import com.piomendes.contactsapp.ui.contact.form.visualtransformation.CurrencyVisualTransformation
+import com.piomendes.contactsapp.ui.contact.form.visualtransformation.PhoneVisualTransformation
 import com.piomendes.contactsapp.ui.shared.composables.ContactAvatar
 import com.piomendes.contactsapp.ui.shared.composables.DefaultErrorState
 import com.piomendes.contactsapp.ui.shared.composables.DefaultLoadingState
@@ -292,7 +294,8 @@ fun FormContent(
                 },
                 errorMessage = formState.phoneNumber.errorMessage,
                 keyboardType = KeyboardType.Phone,
-                enabled = !isSaving
+                enabled = !isSaving,
+                visualTransformation = PhoneVisualTransformation()
             )
         }
 
@@ -341,7 +344,8 @@ fun FormContent(
                 },
                 errorMessage = formState.assetValue.errorMessage,
                 keyboardType = KeyboardType.Decimal,
-                enabled = !isSaving
+                enabled = !isSaving,
+                visualTransformation = CurrencyVisualTransformation()
             )
         }
 
